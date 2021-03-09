@@ -107,6 +107,12 @@ class Village:
 		for entite in self.liste_entites:
 			entite.avancer()
 
+		for source in self.liste_sources:
+			a= source.envoyer()
+			if a != None:
+				self.liste_entites.append(a)
+			else:
+				self.liste_sources.remove(source)
 
 	def update_parametres(self):
 		'''
@@ -125,17 +131,27 @@ class Village:
 
 # -------------------------------- Main --------------------------------
 if __name__ == '__main__':																			# Instruction principale du programme.
-	nb_points = 100
+	nb_points = 60
 	temps_mesure = 5
-	nb_simulations = 10000
+	nb_simulations = 1000
 
 	abscisses = [temps_mesure * k for k in range(nb_points)]
 	ordonnees = [0] * nb_points
 
 	for k in range(nb_simulations):
 		case_1 = Case()
-
-		village = Village([Entite(case_1, sante = 1), Entite(case_1), Entite(case_1)])
+		case_2 = Case()
+		case_3 = Case()
+		case_5 = Case()
+		case_4 = Magasin(max_clients=1)
+		case_6 = Magasin(max_clients=100)
+		case_1.liste_cases_disponibles = [case_2]
+		case_2.liste_cases_disponibles = [case_3]
+		case_3.liste_cases_disponibles = [case_4, case_5]
+		case_4.liste_cases_disponibles = [case_5]
+		case_5.liste_cases_disponibles = [case_6]
+	
+		village = Village([], [Source(50, 0.2, case_1)])
 
 		for _ in range(abscisses[-1] + 1):
 			if _ % temps_mesure == 0:
@@ -156,8 +172,8 @@ if __name__ == '__main__':																			# Instruction principale du program
 
 	courbe = Courbe(abscisses, ordonnees)
 
-	modele = Interpolation(courbe, sigmoide_asymetrique_generalisee)
-	parametres = modele.interpoler(maxfev = 100000)
+	modele = Interpolation(courbe, fonction_logistique_generalisee)
+	parametres = modele.interpoler(maxfev = 100000000)
 	print(parametres)
 
 	courbe.tracer('o')

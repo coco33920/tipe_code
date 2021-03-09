@@ -153,7 +153,7 @@ class Source:
 
 
 	# -------------------------------- Constructeur --------------------------------
-	def __init__(self, entite_type, taux_contamine = 0.1, nombre_entites = 5):
+	def __init__(self, nombre_entite, contamination, case_depart):
 		'''
 			Constructeur de la classe 'Source'.
 
@@ -174,17 +174,15 @@ class Source:
 		'''
 
 		# On initialise les différents champs de l'objet 'Source'.
-		self.entite_type = entite_type
-		self.taux_contamine = taux_contamine
-
-		self.nombre_entites = nombre_entites
-
+		self.case = case_depart
+		self.nombre = nombre_entite
+		self.contamination = contamination
 	# ------------------------------------------------------------------------------
 
 
 
 	# -------------------------------- Méthodes(s) --------------------------------
-	def envoyer(self, graphe):
+	def envoyer(self):
 		'''
 			Fonction 'envoyer' qui gère l'envoie d'entité sur le 'graphe' selon la source concernée.
 
@@ -195,13 +193,15 @@ class Source:
 			----------------------------------------------
 
 		'''
-
-		entite = deepcopy(self.entite_type)
-		entite.sante = 1 * (uniform(0, 1) <= self.taux_contamine)
-
-		self.nombre_entites -= 1
-
-		return (entite, self.nombre_entites == 0)
+		if(self.nombre == 0):
+			return (None)
+		
+		a = uniform(0,1)
+		entite = Entite(self.case)
+		entite.parametres['sante'] = (a<=self.contamination)
+		self.nombre -= 1
+		return (entite)
+		
 
 	# -----------------------------------------------------------------------------
 
